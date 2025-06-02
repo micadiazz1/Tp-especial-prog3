@@ -8,8 +8,17 @@ public class Main {
             fabrica.cargarDesdeArchivo(archivo);
             System.out.println("Backtracking");
             System.out.println("Solucion Obtenida: " + fabrica.backtracking());
-            System.out.println("Solucion Obtenida: " + " cantidad de piezas producidas: " + fabrica.getPiezasTotales() + " y" + " cantidad de puestas en funcionamiento requeridas " + fabrica.getCantSolucion());
+            System.out.println("Cantidad de piezas producidas: " + fabrica.getPiezasTotales() + " y" + " cantidad de maquinas en funcionamiento: " + fabrica.getCantSolucion());
             System.out.println("Cantidad de estados generados : " + fabrica.getCantEstadoGenerado() );
+
+
+            System.out.println("--------------------------------------------");
+
+            System.out.println("Greedy");
+            System.out.println("Solucion Obtenida: " + fabrica.greedy());
+            System.out.println("Solucion Obtenida: " + " cantidad de piezas producidas: " + fabrica.getPiezasTotales() + " y" + " cantidad de maquinas funcionamiento " + fabrica.getCantSolucionGreedy());
+            System.out.println("Cantidad de estados generados : " + fabrica.getCantEstadoGeneradoGreedy());
+
 
 
         } catch (Exception e) {
@@ -17,4 +26,3 @@ public class Main {
         }
     }
 }
-

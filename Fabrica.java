@@ -1,19 +1,27 @@
+import org.w3c.dom.ls.LSOutput;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class Fabrica {
     private List<Maquina> maquinas;
-    private int piezasTotales;
     private List<Maquina> solucion;
-    private int cantEstadoGenerado;
+    private int piezasTotales;
+
+    private int estadosExplorados;
+    private int cantEstadoGeneradoGreedy;
+    private List<Maquina> solucionGreedy;
 
     public Fabrica() {
         maquinas = new ArrayList<>();
         solucion = new ArrayList<>();
-        cantEstadoGenerado = 0;
+        estadosExplorados= 0;
+        cantEstadoGeneradoGreedy = 0;
+        solucionGreedy= new ArrayList<>();
     }
 
     public void cargarDesdeArchivo(String archivo) throws IOException {
@@ -42,7 +50,11 @@ public class Fabrica {
         return piezasTotales;
     }
     public int getCantEstadoGenerado(){
-        return cantEstadoGenerado;
+        return estadosExplorados;
+    }
+
+    public int getCantEstadoGeneradoGreedy(){
+        return cantEstadoGeneradoGreedy;
     }
 
     public int getCantSolucion() {
@@ -52,6 +64,14 @@ public class Fabrica {
         }
         return cont;
     }
+    public int getCantSolucionGreedy() {
+        int cont=0;
+        for(Maquina m : solucionGreedy){
+            cont++;
+        }
+        return cont;
+    }
+
 
     /*
      * <<Breve explicación de la estrategia de resolución. Por ejemplo:
@@ -71,22 +91,22 @@ public class Fabrica {
      *
      *
      * - Posibles podas.
-     * -    Si el total de piezas acumuladas supera el objetivo.
+     *     Si el total de piezas acumuladas supera el objetivo.
      *
      *
      * >>
      */
     public List<Maquina> backtracking() {
         solucion.clear();
-        int sumaAcumuladaPiezas = 0;
+        int sumaAcumuladaPiezas = 0,index = 0;
 
         ArrayList<Maquina>caminoActual=new ArrayList<>();
-        backtracking(caminoActual, sumaAcumuladaPiezas);
+        backtracking(caminoActual, sumaAcumuladaPiezas, index);
 
         return solucion;
     }
-    private void backtracking(ArrayList<Maquina>caminoActual, int sumaAcumuladaPiezas){
-        cantEstadoGenerado++;
+    private void backtracking(ArrayList<Maquina>caminoActual, int sumaAcumuladaPiezas, int index){
+        estadosExplorados++;
         //si la cantidad de piezas acumuladas es igual al objetivo (condicion de corte)
         if (sumaAcumuladaPiezas == piezasTotales){
             //si la cant de maquinas actuales es menor a la maquinas solucion
@@ -101,35 +121,92 @@ public class Fabrica {
             return;
         }
         //recorro las maquinas //arreglo maquinas
-        for(Maquina maquina: maquinas){
-            //agrego la maquina a camino actual
+        for (int i = index; i < maquinas.size(); i++) {
+            Maquina maquina = maquinas.get(i);
             caminoActual.add(maquina);
-            //back
-
-            backtracking(caminoActual,sumaAcumuladaPiezas + maquina.getPiezas());
-            //saco de caminoActual la maquina
-            caminoActual.remove(caminoActual.size()-1);
-
+            backtracking(caminoActual, sumaAcumuladaPiezas + maquina.getPiezas(), i);
+            caminoActual.remove(caminoActual.size() - 1);
         }
+
+
 
     }
 
 
     /*
      * <<Breve explicación de la estrategia de resolución. Por ejemplo:
-     * - Cómo se genera el árbol de exploración.
-     * - Cuáles son los estados finales y estados solución.
-     * - Posibles podas.
-     * - etc.>>
+     *  ¿Cuáles son los candidatos?
+     *      Los candidatos son las maquinas encargadas en generar piezas.
      *
-     *   public Solucion greedy() {
-
-    }
-
+     * - Estrategia de selección de candidatos.
+     *      nuestra estrategia consta de ordenar los candidatos de mayor a menor para asi poder comenzar de la maquina que contenga
+     *      mayor cantidad de piezas entonces, brindando la posibilidad de que no tengamos que recurrir a
+     *      otra maquina o a varias maquinas, optimizando la busqueda.
+     *
+     * - Consideraciones respecto a encontrar o no solución.
+     *     Esta estrategia no siempre garantiza que se llegue a una solución. Si con las máquinas que elegimos no se puede alcanzar
+     *     la cantidad de piezas que necesitamos, entonces no se cumple el objetivo.
+     *     Como se trata de una estrategia greedy, en cada paso elegimos la mejor opción en ese momento (la máquina que más piezas hace),
+     *     sin pensar si más adelante esa elección nos va a complicar. Por eso, puede pasar que no encontremos una solución,
+     *     aunque sí exista otra combinación de máquinas que sí lo logre.
+     *
+     *
      */
 
 
 
+    public List<Maquina> greedy(){
+        //conjunto que contiene a los candidatos(maquina)
+        List<Maquina> candidatos = this.maquinas;
+        int cantPiezasTotales = 0;
 
+        while (!candidatos.isEmpty() && !solucion(cantPiezasTotales)){
+            cantEstadoGeneradoGreedy++;
+
+            Maquina x = seleccionar(candidatos);
+
+            if(factible(x,cantPiezasTotales)){
+                solucionGreedy.add(x);
+                cantPiezasTotales+=x.getPiezas();
+
+            }else{
+                candidatos.remove(x);
+            }
+
+        }
+
+        if (solucion(cantPiezasTotales)){
+            return solucionGreedy;
+        }
+
+        System.out.println("No se ha encontrado solucion");
+        return null;
+
+    }
+
+    public boolean factible(Maquina x, int cantPiezasTotales){
+        return cantPiezasTotales+x.getPiezas()<=piezasTotales;
+    }
+
+    public Maquina seleccionar(List<Maquina> candidatos){
+        Maquina mejor = null;
+        int sumaMayor = 0;
+
+        for (Maquina m: candidatos){
+            int sumaActual = 0;
+            sumaActual+=m.getPiezas();
+
+            if (sumaActual > sumaMayor){
+                sumaMayor = sumaActual;
+                mejor = m;
+            }
+        }
+        return mejor;
+    }
+
+
+    public boolean solucion(int cantPiezaTotales){
+        return cantPiezaTotales==piezasTotales;
+    }
 
 }

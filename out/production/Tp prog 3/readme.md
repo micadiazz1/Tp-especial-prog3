@@ -18,7 +18,7 @@ Dado un archivo de configuración con la cantidad total de piezas a producir y l
 
 ## 📂 Estructura del archivo de entrada
 
-Formato del archivo (`config.txt` o similar):
+Archivo (`config.txt`):
 
 12  
 M1,7  
@@ -41,30 +41,10 @@ M4,1
 - **Costo computacional**: Cantidad de **estados generados** durante la búsqueda.
 
 ### 📌 Greedy
-- **Solución obtenida**: Secuencia generada con una heurística golosa.
-- **Cantidad de piezas producidas**: Total producido (puede ser óptimo o no).
-- **Puestas en funcionamiento**: Cantidad de máquinas usadas en esta estrategia.
-- **Costo computacional**: Cantidad de **candidatos considerados**.
+
 
 ---
 
-## 💡 Estrategia de resolución
-
-### 🔍 Backtracking
-
-## Arbol de busqueda
-
-![Texto alternativo](arbol de busqueda.png)
 
 
-```java
-/*
- * Estrategia de resolución:
- * - Se construye un árbol de decisión donde cada nodo representa una secuencia parcial de máquinas.
- * - En cada nivel se agrega una máquina y se calcula la suma acumulada de piezas.
- * - Estado final: suma de piezas acumuladas == objetivo.
- * - Estado inválido (poda): suma acumulada > objetivo.
- * - Se guarda la mejor solución (menor cantidad de máquinas).
- * - Se mide el costo como cantidad de estados generados.
- */
 
