@@ -117,7 +117,7 @@ public class Fabrica {
             }
         }
         //poda (cuando superamos el valor objetivo)
-        if (sumaAcumuladaPiezas > piezasTotales){
+        if (sumaAcumuladaPiezas > piezasTotales || caminoActual.size() < solucion.size()){
             return;
         }
         //recorro las maquinas //arreglo maquinas
