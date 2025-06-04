@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -98,14 +99,14 @@ public class Fabrica {
      */
     public List<Maquina> backtracking() {
         solucion.clear();
-        int sumaAcumuladaPiezas = 0,index = 0;
+        int sumaAcumuladaPiezas = 0;
 
         ArrayList<Maquina>caminoActual=new ArrayList<>();
-        backtracking(caminoActual, sumaAcumuladaPiezas, index);
+        backtracking(caminoActual, sumaAcumuladaPiezas);
 
         return solucion;
     }
-    private void backtracking(ArrayList<Maquina>caminoActual, int sumaAcumuladaPiezas, int index){
+    private void backtracking(ArrayList<Maquina>caminoActual, int sumaAcumuladaPiezas){
         estadosExplorados++;
         //si la cantidad de piezas acumuladas es igual al objetivo (condicion de corte)
         if (sumaAcumuladaPiezas == piezasTotales){
@@ -114,22 +115,22 @@ public class Fabrica {
                 //se limpia solucion, y se guarda la mejor
                 solucion.clear();
                 solucion.addAll(caminoActual);
+
+            }
+
+        }else {
+            //poda (cuando superamos el valor objetivo)
+            if (sumaAcumuladaPiezas < piezasTotales || caminoActual.size() < solucion.size()) {
+                //recorro las maquinas //arreglo maquinas
+                for (Maquina maquina : maquinas) {
+                    if(sumaAcumuladaPiezas + maquina.getPiezas() <= piezasTotales){
+                        caminoActual.add(maquina);
+                        backtracking(caminoActual, sumaAcumuladaPiezas + maquina.getPiezas());
+                        caminoActual.remove(caminoActual.size() - 1);
+                    }
+                }
             }
         }
-        //poda (cuando superamos el valor objetivo)
-        if (sumaAcumuladaPiezas > piezasTotales || caminoActual.size() < solucion.size()){
-            return;
-        }
-        //recorro las maquinas //arreglo maquinas
-        for (int i = index; i < maquinas.size(); i++) {
-            Maquina maquina = maquinas.get(i);
-            caminoActual.add(maquina);
-            backtracking(caminoActual, sumaAcumuladaPiezas + maquina.getPiezas(), i);
-            caminoActual.remove(caminoActual.size() - 1);
-        }
-
-
-
     }
 
 
@@ -159,11 +160,11 @@ public class Fabrica {
         //conjunto que contiene a los candidatos(maquina)
         List<Maquina> candidatos = this.maquinas;
         int cantPiezasTotales = 0;
-
+        candidatos.sort((m1, m2) -> Integer.compare(m2.getPiezas(), m1.getPiezas()));
         while (!candidatos.isEmpty() && !solucion(cantPiezasTotales)){
             cantEstadoGeneradoGreedy++;
 
-            Maquina x = seleccionar(candidatos);
+            Maquina x = candidatos.get(0);
 
             if(factible(x,cantPiezasTotales)){
                 solucionGreedy.add(x);
@@ -187,23 +188,6 @@ public class Fabrica {
     public boolean factible(Maquina x, int cantPiezasTotales){
         return cantPiezasTotales+x.getPiezas()<=piezasTotales;
     }
-
-    public Maquina seleccionar(List<Maquina> candidatos){
-        Maquina mejor = null;
-        int sumaMayor = 0;
-
-        for (Maquina m: candidatos){
-            int sumaActual = 0;
-            sumaActual+=m.getPiezas();
-
-            if (sumaActual > sumaMayor){
-                sumaMayor = sumaActual;
-                mejor = m;
-            }
-        }
-        return mejor;
-    }
-
 
     public boolean solucion(int cantPiezaTotales){
         return cantPiezaTotales==piezasTotales;
