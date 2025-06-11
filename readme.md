@@ -12,7 +12,7 @@ En una fábrica de autopartes se cuenta con un conjunto de máquinas, cada una c
 Dado un archivo de configuración con la cantidad total de piezas a producir y las máquinas disponibles, se debe determinar una combinación óptima que minimice el número de puestas en funcionamiento usando:
 
 - **Backtracking**: búsqueda exhaustiva con podas.
-- **Greedy**: selección golosa basada en una heurística.
+- **Greedy**: 
 
 ---
 
