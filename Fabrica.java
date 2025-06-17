@@ -29,10 +29,10 @@ public class Fabrica {
         BufferedReader br = new BufferedReader(new FileReader(archivo));
         String linea = br.readLine();
 
-        // Leer cantidad total de piezas
+        // leer cantidad total de piezas
         piezasTotales = Integer.parseInt(linea.trim());
 
-        // Leer máquinas
+        // leer maquinas
         while ((linea = br.readLine()) != null) {
             String[] partes = linea.split(",");
             String nombre = partes[0].trim();
@@ -75,7 +75,7 @@ public class Fabrica {
 
 
     /*
-     * <<Breve explicación de la estrategia de resolución. Por ejemplo:
+     * <<Breve explicación de la estrategia de resolución:
      *
      * - Cómo se genera el árbol de exploración.
      *    mediante la cantidad de piezas producidas en el momento y la secuencia de maquinas utilizadas.
@@ -92,7 +92,7 @@ public class Fabrica {
      *
      *
      * - Posibles podas.
-     *     Si el total de piezas acumuladas supera el objetivo.
+     *     Si el total de piezas acumuladas supera el objetivo o si el camino actual es menos eficiente que la mejor solucion actual.
      *
      *
      * >>
@@ -119,9 +119,7 @@ public class Fabrica {
             }
 
         }else {
-            //poda (cuando superamos el valor objetivo)
             if (sumaAcumuladaPiezas < piezasTotales || caminoActual.size() < solucion.size()) {
-                //recorro las maquinas //arreglo maquinas
                 for (Maquina maquina : maquinas) {
                     if(sumaAcumuladaPiezas + maquina.getPiezas() <= piezasTotales){
                         caminoActual.add(maquina);
@@ -135,7 +133,7 @@ public class Fabrica {
 
 
     /*
-     * <<Breve explicación de la estrategia de resolución. Por ejemplo:
+     * <<Breve explicación de la estrategia de resolución:
      *  ¿Cuáles son los candidatos?
      *      Los candidatos son las maquinas encargadas en generar piezas.
      *
@@ -157,7 +155,6 @@ public class Fabrica {
 
 
     public List<Maquina> greedy(){
-        //conjunto que contiene a los candidatos(maquina)
         List<Maquina> candidatos = this.maquinas;
         int cantPiezasTotales = 0;
         candidatos.sort((m1, m2) -> Integer.compare(m2.getPiezas(), m1.getPiezas()));
