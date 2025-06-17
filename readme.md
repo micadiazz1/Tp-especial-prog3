@@ -31,6 +31,9 @@ M4,1
 - Cada línea siguiente representa una máquina con su nombre y la cantidad de piezas que produce.
 
 ---
+## Arbol de exploracion
+![Arbol de exploracion](imagen/arbol_exploracion.png)
+
 
 ## ⚙️ Ejecución y Resultados Esperados
 
