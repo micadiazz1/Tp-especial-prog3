@@ -119,7 +119,7 @@ public class Fabrica {
             }
 
         }else {
-            if (sumaAcumuladaPiezas < piezasTotales || caminoActual.size() < solucion.size()) {
+            if (sumaAcumuladaPiezas < piezasTotales && (solucion.isEmpty() || caminoActual.size() < solucion.size())) {
                 for (Maquina maquina : maquinas) {
                     if(sumaAcumuladaPiezas + maquina.getPiezas() <= piezasTotales){
                         caminoActual.add(maquina);
