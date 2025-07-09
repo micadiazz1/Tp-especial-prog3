@@ -102,11 +102,11 @@ public class Fabrica {
         int sumaAcumuladaPiezas = 0;
 
         ArrayList<Maquina>caminoActual=new ArrayList<>();
-        backtracking(caminoActual, sumaAcumuladaPiezas);
+        backtracking(caminoActual, sumaAcumuladaPiezas, 0);
 
         return solucion;
     }
-    private void backtracking(ArrayList<Maquina>caminoActual, int sumaAcumuladaPiezas){
+    private void backtracking(ArrayList<Maquina>caminoActual, int sumaAcumuladaPiezas, int indice){
         estadosExplorados++;
         //si la cantidad de piezas acumuladas es igual al objetivo (condicion de corte)
         if (sumaAcumuladaPiezas == piezasTotales){
@@ -120,10 +120,11 @@ public class Fabrica {
 
         }else {
             if (sumaAcumuladaPiezas < piezasTotales && (solucion.isEmpty() || caminoActual.size() < solucion.size())) {
-                for (Maquina maquina : maquinas) {
+                for (int i = indice; i < maquinas.size(); i++) {
+                    Maquina maquina = maquinas.get(i);
                     if(sumaAcumuladaPiezas + maquina.getPiezas() <= piezasTotales){
                         caminoActual.add(maquina);
-                        backtracking(caminoActual, sumaAcumuladaPiezas + maquina.getPiezas());
+                        backtracking(caminoActual, sumaAcumuladaPiezas + maquina.getPiezas(), i);
                         caminoActual.remove(caminoActual.size() - 1);
                     }
                 }
@@ -152,24 +153,23 @@ public class Fabrica {
      *
      */
 
-
-
     public List<Maquina> greedy(){
         List<Maquina> candidatos = this.maquinas;
         int cantPiezasTotales = 0;
         candidatos.sort((m1, m2) -> Integer.compare(m2.getPiezas(), m1.getPiezas()));
         while (!candidatos.isEmpty() && !solucion(cantPiezasTotales)){
-            cantEstadoGeneradoGreedy++;
 
             Maquina x = candidatos.get(0);
 
-            if(factible(x,cantPiezasTotales)){
+            // Usar la maquina x todas las veces posibles antes de descartarla
+            while (factible(x, cantPiezasTotales)) {
                 solucionGreedy.add(x);
-                cantPiezasTotales+=x.getPiezas();
-
-            }else{
-                candidatos.remove(x);
+                cantPiezasTotales += x.getPiezas();
+                cantEstadoGeneradoGreedy++;
             }
+
+            // se uso todo lo que pudo, no la vuelvo a evaluar
+            candidatos.remove(0);
 
         }
 
